@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Dashboard | DonateWise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div>
+        <h1>Staff Dashboard</h1>
+        <p class="subtitle">Quick overview of inventory activity</p>
+      </div>
+      <nav class="top-nav">
+        <a class="nav-btn ghost" href="login.html">Log Out</a>
+        <a class="nav-btn secondary" href="index.html">Back to Inventory</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard-page">
+    <div class="dashboard-content">
+      <section class="dashboard-grid">
+        <article class="dashboard-stat">
+          <p>Total Items</p>
+          <h3>48</h3>
+        </article>
+
+        <article class="dashboard-stat">
+          <p>Available</p>
+          <h3>29</h3>
+        </article>
+
+        <article class="dashboard-stat">
+          <p>Pending Pickup</p>
+          <h3>8</h3>
+        </article>
+
+        <article class="dashboard-stat">
+          <p>Items Sold</p>
+          <h3>11</h3>
+        </article>
+      </section>
+
+      <section class="table-card">
+        <h2>Recent Item Updates</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Updated By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Office Chair</td>
+              <td>Furniture</td>
+              <td><span class="status-badge available">Available</span></td>
+              <td>Staff User</td>
+            </tr>
+            <tr>
+              <td>Microwave Oven</td>
+              <td>Household</td>
+              <td><span class="status-badge pending">Pending Pickup</span></td>
+              <td>Volunteer</td>
+            </tr>
+            <tr>
+              <td>Laptop - HP</td>
+              <td>Electronics</td>
+              <td><span class="status-badge sold">Sold</span></td>
+              <td>Manager</td>
+            </tr>
+            <tr>
+              <td>Desk Lamp</td>
+              <td>Office Supplies</td>
+              <td><span class="status-badge sold">Sold</span></td>
+              <td>Staff User</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+
+  <button id="chatToggle" class="chat-toggle" aria-label="Open help assistant">💬</button>
+
+  <section id="chatBox" class="chat-box hidden">
+    <div class="chat-header">
+      <h3>Help Assistant</h3>
+      <button id="chatClose" aria-label="Close help assistant">×</button>
+    </div>
+
+    <div class="chat-body">
+      <p class="bot-message">Need help reading the dashboard?</p>
+
+      <div class="quick-questions">
+        <button class="quick-question" data-answer="The dashboard gives staff a quick overview of available, pending, and sold items.">
+          What does this dashboard show?
+        </button>
+
+        <button class="quick-question" data-answer="Recent Item Updates helps staff track the latest inventory changes without checking each listing manually.">
+          Why are recent updates useful?
+        </button>
+      </div>
+
+      <div id="chatResponses"></div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

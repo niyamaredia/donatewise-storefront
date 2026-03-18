@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Item Details | DonateWise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div>
+        <h1>DonateWise Staff Inventory Portal</h1>
+        <p class="subtitle">Item details and status management</p>
+      </div>
+      <nav class="top-nav">
+        <a class="nav-btn ghost" href="login.html">Log Out</a>
+        <a class="nav-btn secondary" href="dashboard.html">Staff Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page-section">
+    <div class="page-topbar">
+      <a class="back-link" href="index.html">← Back to Inventory</a>
+    </div>
+
+    <section class="detail-card">
+      <img id="detailImage" src="images/chair.jpg" class="detail-image" alt="Item image">
+
+      <div class="detail-info">
+        <div class="item-top-row">
+          <h2 id="detailName">Office Chair</h2>
+          <span id="detailStatusBadge" class="status-badge available">Available</span>
+        </div>
+
+        <div class="detail-meta">
+          <p><strong>Category:</strong> <span id="detailCategory">Furniture</span></p>
+          <p class="detail-price"><strong>Price:</strong> <span id="detailPrice">$20</span></p>
+          <p><strong>Status:</strong> <span id="detailStatusText">Available</span></p>
+          <p><strong>Description:</strong> <span id="detailDescription">Gently used office chair in good condition. Suitable for desk or reception use.</span></p>
+        </div>
+
+        <div class="action-group">
+          <button class="action-btn status-action" data-status="Available">Mark as Available</button>
+          <button class="action-btn status-action" data-status="Pending Pickup">Mark as Pending Pickup</button>
+          <button class="action-btn status-action" data-status="Sold">Mark as Sold</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button id="chatToggle" class="chat-toggle" aria-label="Open help assistant">💬</button>
+
+  <section id="chatBox" class="chat-box hidden">
+    <div class="chat-header">
+      <h3>Help Assistant</h3>
+      <button id="chatClose" aria-label="Close help assistant">×</button>
+    </div>
+
+    <div class="chat-body">
+      <p class="bot-message">Need help managing this item?</p>
+
+      <div class="quick-questions">
+        <button class="quick-question" data-answer="Use the status buttons on this page to update the item as available, pending pickup, or sold.">
+          How do I update item status?
+        </button>
+
+        <button class="quick-question" data-answer="Pending Pickup means the item has been requested and is waiting to be collected.">
+          What does pending pickup mean?
+        </button>
+      </div>
+
+      <div id="chatResponses"></div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
