@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Item Details | DonateWise</title>
+  <title>DonateWise | Item Details</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,36 +12,39 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <div>
-        <h1>DonateWise Staff Inventory Portal</h1>
-        <p class="subtitle">Item details and status management</p>
+      <div class="brand-block">
+        <p class="eyebrow">DONATEWISE</p>
+        <h1>Item Details</h1>
+        <p class="subtitle">Detailed storefront information for the selected listing.</p>
       </div>
+
       <nav class="top-nav">
-        <a class="nav-btn ghost" href="login.html">Log Out</a>
-        <a class="nav-btn secondary" href="dashboard.html">Staff Dashboard</a>
+        <a class="nav-btn ghost" href="index.html">Log Out</a>
+        <a class="nav-btn primary" href="dashboard.html">Dashboard</a>
       </nav>
     </div>
   </header>
 
-  <main class="container page-section">
+  <main class="page-section">
     <div class="page-topbar">
-      <a class="back-link" href="index.html">← Back to Inventory</a>
+      <a class="back-link" href="home.html">← Back to Inventory</a>
     </div>
 
-    <section class="detail-card">
-      <img id="detailImage" src="images/chair.jpg" class="detail-image" alt="Item image">
+    <section class="detail-card reveal">
+      <img id="detailImage" src="images/monitor.jpg" class="detail-image" alt="Item image">
 
       <div class="detail-info">
         <div class="item-top-row">
-          <h2 id="detailName">Office Chair</h2>
+          <h2 id="detailName">Loading...</h2>
           <span id="detailStatusBadge" class="status-badge available">Available</span>
         </div>
 
         <div class="detail-meta">
-          <p><strong>Category:</strong> <span id="detailCategory">Furniture</span></p>
-          <p class="detail-price"><strong>Price:</strong> <span id="detailPrice">$20</span></p>
-          <p><strong>Status:</strong> <span id="detailStatusText">Available</span></p>
-          <p><strong>Description:</strong> <span id="detailDescription">Gently used office chair in good condition. Suitable for desk or reception use.</span></p>
+          <p><strong>Category:</strong> <span id="detailCategory">-</span></p>
+          <p><strong>Condition:</strong> <span id="detailCondition">-</span></p>
+          <p class="detail-price"><strong>Price:</strong> <span id="detailPrice">-</span></p>
+          <p><strong>Status:</strong> <span id="detailStatusText">-</span></p>
+          <p><strong>Description:</strong> <span id="detailDescription">Loading item details...</span></p>
         </div>
 
         <div class="action-group">
@@ -57,7 +60,7 @@
 
   <section id="chatBox" class="chat-box hidden">
     <div class="chat-header">
-      <h3>Help Assistant</h3>
+      <h3>Support Assistant</h3>
       <button id="chatClose" aria-label="Close help assistant">×</button>
     </div>
 
@@ -65,12 +68,11 @@
       <p class="bot-message">Need help managing this item?</p>
 
       <div class="quick-questions">
-        <button class="quick-question" data-answer="Use the status buttons on this page to update the item as available, pending pickup, or sold.">
-          How do I update item status?
+        <button class="quick-question" data-answer="You can review the current item status and use the buttons to demonstrate different status states in the interface.">
+          How do I manage item status?
         </button>
-
-        <button class="quick-question" data-answer="Pending Pickup means the item has been requested and is waiting to be collected.">
-          What does pending pickup mean?
+        <button class="quick-question" data-answer="This page shows the current item’s category, condition, price, and storefront status.">
+          What does this page show?
         </button>
       </div>
 
