@@ -91,20 +91,11 @@ function getStatusClass(status) {
   return "available";
 }
 
-function getImageFromTitle(title) {
-  const t = String(title).toLowerCase();
+function getImageFromTitle(title, category) {
+  const safeTitle = encodeURIComponent(String(title || "").trim());
+  const safeCategory = encodeURIComponent(String(category || "").trim());
 
-  if (t.includes("monitor")) return "images/monitor.jpg";
-  if (t.includes("chair")) return "images/chair.jpg";
-  if (t.includes("jacket")) return "images/jacket.jpg";
-  if (t.includes("laptop")) return "images/laptop.jpg";
-  if (t.includes("table")) return "images/table.jpg";
-  if (t.includes("shirt")) return "images/shirts.jpg";
-  if (t.includes("microwave")) return "images/microwave.jpg";
-  if (t.includes("lamp")) return "images/lamp.jpg";
-  if (t.includes("watch")) return "images/watch.jpg";
-
-  return "images/default.jpg";
+  return `https://source.unsplash.com/600x400/?${safeTitle},${safeCategory}`;
 }
 
 function formatCurrency(value) {
@@ -143,7 +134,7 @@ function mapSharePointItems(rawItems) {
       price,
       status,
       condition,
-      image: sharePointImage || getImageFromTitle(title)
+      image: sharePointImage || getImageFromTitle(title, category)
     };
   });
 }
@@ -304,7 +295,7 @@ async function loadDashboardFromSharePoint() {
 
     tableBody.innerHTML = "";
 
-    items.slice(0, 6).forEach((item) => {
+    items.slice(0, 10).forEach((item) => {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${item.title}</td>
