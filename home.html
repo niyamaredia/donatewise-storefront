@@ -1,221 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DonateWise Staff Inventory Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DonateWise Inventory</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <div>
-        <h1>DonateWise Staff Inventory Portal</h1>
-        <p class="subtitle">Internal inventory system for Drop-In Centre staff</p>
-      </div>
 
-      <nav class="top-nav">
-        <a class="nav-btn ghost" href="login.html">Log Out</a>
-        <a class="nav-btn secondary" href="dashboard.html">Staff Dashboard</a>
-      </nav>
-    </div>
-  </header>
+<header class="navbar">
+  <h1 class="logo">DonateWise</h1>
+  <div class="nav-actions">
+    <button class="btn-secondary">Log Out</button>
+    <a href="dashboard.html" class="btn-primary">Dashboard</a>
+  </div>
+</header>
 
-  <main class="container">
-    <section class="hero-card compact-hero">
-  <span class="eyebrow">SPRINT 2 PROTOTYPE</span>
-  <h2>Find available items faster</h2>
-  <p>
-    This internal inventory portal helps Drop-In Centre staff browse available items,
-    manage listing status, and reduce manual store work.
-  </p>
-  <div class="hero-actions">
-    <a href="#inventoryGrid" class="nav-btn secondary">Browse Items</a>
-    <a href="dashboard.html" class="nav-btn ghost-dark">View Dashboard</a>
+<section class="hero fade-in">
+  <h2>Live Inventory System</h2>
+  <p>Real-time visibility of available donated items</p>
+</section>
+
+<section class="controls">
+  <input id="searchInput" type="text" placeholder="Search items...">
+
+  <div class="filters">
+    <button class="filter-btn active" data-category="all">All</button>
+    <button class="filter-btn" data-category="electronics">Electronics</button>
+    <button class="filter-btn" data-category="furniture">Furniture</button>
+    <button class="filter-btn" data-category="clothing">Clothing</button>
+    <button class="filter-btn" data-category="household">Household</button>
   </div>
 </section>
 
-    <section class="controls-section">
-      <div class="search-wrap">
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Search items..."
-          aria-label="Search items"
-        />
-      </div>
+<section id="itemsContainer" class="grid"></section>
 
-      <div class="filter-wrap">
-        <button class="filter-btn active" data-category="all">All</button>
-        <button class="filter-btn" data-category="electronics">Electronics</button>
-        <button class="filter-btn" data-category="furniture">Furniture</button>
-        <button class="filter-btn" data-category="clothing">Clothing</button>
-        <button class="filter-btn" data-category="household">Household</button>
-        <button class="filter-btn" data-category="office supplies">Office Supplies</button>
-      </div>
-    </section>
+<p id="emptyState" class="hidden empty">No items found.</p>
 
-    <section class="inventory-grid" id="inventoryGrid">
-      <article class="item-card" data-category="electronics" data-name="Dell Monitor 24">
-        <img src="images/monitor.jpg" class="item-image" alt="Dell Monitor 24 inch">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Dell Monitor 24"</h3>
-            <span class="status-badge available">Available</span>
-          </div>
-          <p class="item-category">Electronics</p>
-          <p class="item-price">$45</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=monitor">View Details</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="item-card" data-category="furniture" data-name="Office Chair">
-        <img src="images/chair.jpg" class="item-image" alt="Office Chair">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Office Chair</h3>
-            <span class="status-badge pending">Pending Pickup</span>
-          </div>
-          <p class="item-category">Furniture</p>
-          <p class="item-price">$20</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=chair">View Details</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="item-card" data-category="clothing" data-name="Winter Jacket">
-        <img src="images/jacket.jpg" class="item-image" alt="Winter Jacket">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Winter Jacket</h3>
-            <span class="status-badge available">Available</span>
-          </div>
-          <p class="item-category">Clothing</p>
-          <p class="item-price">$15</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=jacket">View Details</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="item-card" data-category="electronics" data-name="Laptop HP">
-        <img src="images/laptop.jpg" class="item-image" alt="HP Laptop">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Laptop - HP</h3>
-            <span class="status-badge sold">Sold</span>
-          </div>
-          <p class="item-category">Electronics</p>
-          <p class="item-price">$120</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=laptop">View Details</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="item-card" data-category="furniture" data-name="Coffee Table">
-        <img src="images/table.jpg" class="item-image" alt="Coffee Table">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Coffee Table</h3>
-            <span class="status-badge available">Available</span>
-          </div>
-          <p class="item-category">Furniture</p>
-          <p class="item-price">$30</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=table">View Details</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="item-card" data-category="clothing" data-name="Mens Dress Shirts">
-        <img src="images/shirts.jpg" class="item-image" alt="Men's Dress Shirts">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Men’s Dress Shirts</h3>
-            <span class="status-badge available">Available</span>
-          </div>
-          <p class="item-category">Clothing</p>
-          <p class="item-price">$10</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=shirts">View Details</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="item-card" data-category="household" data-name="Microwave Oven">
-        <img src="images/microwave.jpg" class="item-image" alt="Microwave Oven">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Microwave Oven</h3>
-            <span class="status-badge pending">Pending Pickup</span>
-          </div>
-          <p class="item-category">Household</p>
-          <p class="item-price">$35</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=microwave">View Details</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="item-card" data-category="office supplies" data-name="Desk Lamp">
-        <img src="images/lamp.jpg" class="item-image" alt="Desk Lamp">
-        <div class="item-content">
-          <div class="item-top-row">
-            <h3>Desk Lamp</h3>
-            <span class="status-badge sold">Sold</span>
-          </div>
-          <p class="item-category">Office Supplies</p>
-          <p class="item-price">$8</p>
-          <div class="item-actions">
-            <a class="card-link" href="item.html?item=lamp">View Details</a>
-          </div>
-        </div>
-      </article>
-    </section>
-  </main>
-
-  <button id="chatToggle" class="chat-toggle" aria-label="Open help assistant">💬</button>
-
-  <section id="chatBox" class="chat-box hidden">
-    <div class="chat-header">
-      <h3>Help Assistant</h3>
-      <button id="chatClose" aria-label="Close help assistant">×</button>
-    </div>
-
-    <div class="chat-body">
-      <p class="bot-message">
-        Hi! I can help with quick questions about the inventory portal.
-      </p>
-
-      <div class="quick-questions">
-        <button class="quick-question" data-answer="To mark an item as sold, open the item details page and click the 'Mark as Sold' button.">
-          How do I mark an item as sold?
-        </button>
-
-        <button class="quick-question" data-answer="Use the search bar or category filters on the inventory page to quickly find available items.">
-          How do I search for items?
-        </button>
-
-        <button class="quick-question" data-answer="Pending Pickup means the item has been requested and is waiting to be collected.">
-          What does pending pickup mean?
-        </button>
-
-        <button class="quick-question" data-answer="You can view recent inventory activity and store statistics on the Staff Dashboard page.">
-          Where can I view recent updates?
-        </button>
-      </div>
-
-      <div id="chatResponses"></div>
-    </div>
-  </section>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
