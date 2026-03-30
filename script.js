@@ -1,4 +1,4 @@
-const apiUrl = "https://7d40a9c57127e2e0af34e868fdebb9.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cd62793afa3492dba9367bcc479774d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c7jvqBTY6xPFAUEobOsD7C2yU_tlOD0XGTWZbgZl0JU";
+const apiUrl = "https://7d40a9c57127e2e0af34e868fdebb9.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cd62793afa3492dba9367bcc479774d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YOUR_FULL_SIG_HERE";
 
 // fallback data only for item detail page
 const itemData = {
@@ -87,6 +87,19 @@ function getImageFromTitle(title) {
   return "images/monitor.jpg";
 }
 
+function getFieldValue(field, fallback = "") {
+  if (field === null || field === undefined) return fallback;
+  if (typeof field === "string" || typeof field === "number") return field;
+  if (Array.isArray(field)) {
+    if (!field.length) return fallback;
+    if (typeof field[0] === "string") return field.join(", ");
+    if (field[0]?.Value) return field.map(item => item.Value).join(", ");
+    return fallback;
+  }
+  if (field?.Value) return field.Value;
+  return fallback;
+}
+
 async function loadItemsFromSharePoint() {
   const container = document.querySelector(".inventory-grid");
   if (!container) return;
@@ -103,12 +116,7 @@ async function loadItemsFromSharePoint() {
     const data = await response.json();
     console.log("FLOW RESPONSE:", data);
 
-    let items = [];
-    if (Array.isArray(data)) {
-      items = data;
-    } else if (Array.isArray(data.value)) {
-      items = data.value;
-    }
+    const items = Array.isArray(data) ? data : data.value || [];
 
     container.innerHTML = "";
 
@@ -118,19 +126,19 @@ async function loadItemsFromSharePoint() {
     }
 
     items.forEach((item, index) => {
-      const title = item.Title || "Untitled Item";
-      const category = item.Category || "Uncategorized";
-      const price = item.Price || "0";
-      const status = item.Status || "Available";
-      const condition = item.Condition || "Good";
+      const title = getFieldValue(item.Title, "Untitled Item");
+      const category = getFieldValue(item.Category, "Uncategorized");
+      const price = getFieldValue(item.Price, "0");
+      const status = getFieldValue(item.Status, "Available");
+      const condition = getFieldValue(item.Condition, "Good");
 
       const fallbackKeys = Object.keys(itemData);
       const itemKey = fallbackKeys[index] || "chair";
 
       const card = document.createElement("article");
       card.className = "item-card";
-      card.dataset.name = title.toLowerCase();
-      card.dataset.category = String(category).toLowerCase();
+      card.dataset.name = String(title).toLowerCase();
+      card.dataset.category = String(category || "").toLowerCase();
 
       card.innerHTML = `
         <img src="${getImageFromTitle(title)}" class="item-image" alt="${title}">
