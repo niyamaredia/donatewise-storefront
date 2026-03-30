@@ -92,10 +92,8 @@ function getStatusClass(status) {
 }
 
 function getImageFromTitle(title, category) {
-  const safeTitle = encodeURIComponent(String(title || "").trim());
-  const safeCategory = encodeURIComponent(String(category || "").trim());
-
-  return `https://source.unsplash.com/600x400/?${safeTitle},${safeCategory}`;
+  const query = encodeURIComponent(`${title} ${category}`);
+  return `https://picsum.photos/seed/${query}/600/400`;
 }
 
 function formatCurrency(value) {
