@@ -1,4 +1,4 @@
-const apiUrl = "https://7d40a9c57127e2e0af34e868fdebb9.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cd62793afa3492dba9367bcc479774d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YOUR_FULL_SIG_HERE";
+const apiUrl = "https://7d40a9c57127e2e0af34e868fdebb9.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cd62793afa3492dba9367bcc479774d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c7jvqBTY6xPFAUEobOsD7C2yU_tlOD0XGTWZbgZl0JU";
 
 // fallback data only for item detail page
 const itemData = {
