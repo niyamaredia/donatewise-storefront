@@ -92,8 +92,26 @@ function getStatusClass(status) {
 }
 
 function getImageFromTitle(title, category) {
-  const query = encodeURIComponent(`${title} ${category}`);
-  return `https://picsum.photos/seed/${query}/600/400`;
+  const safeTitle = String(title || "Item").trim();
+  const safeCategory = String(category || "").trim();
+
+  const label = encodeURIComponent(safeTitle);
+  const sub = encodeURIComponent(safeCategory);
+
+  return `data:image/svg+xml;utf8,
+    <svg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'>
+      <defs>
+        <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+          <stop offset='0%' stop-color='%23dbeafe'/>
+          <stop offset='100%' stop-color='%23ede9fe'/>
+        </linearGradient>
+      </defs>
+      <rect width='600' height='400' fill='url(%23g)'/>
+      <circle cx='300' cy='150' r='54' fill='%23ffffff' opacity='0.9'/>
+      <text x='300' y='165' text-anchor='middle' font-size='42' font-family='Arial, sans-serif' fill='%23334155'>📦</text>
+      <text x='300' y='255' text-anchor='middle' font-size='30' font-weight='700' font-family='Arial, sans-serif' fill='%23111827'>${label}</text>
+      <text x='300' y='292' text-anchor='middle' font-size='18' font-family='Arial, sans-serif' fill='%23667085'>${sub}</text>
+    </svg>`;
 }
 
 function formatCurrency(value) {
