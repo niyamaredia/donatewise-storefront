@@ -1,6 +1,6 @@
 const apiUrl = "https://7d40a9c57127e2e0af34e868fdebb9.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cd62793afa3492dba9367bcc479774d/triggers/manual/paths/invoke?api-version=1";
 
-// fallback local item data for item detail page
+// fallback data only for item detail page
 const itemData = {
   monitor: {
     name: 'Dell Monitor 24"',
@@ -68,7 +68,25 @@ const itemData = {
   }
 };
 
-// SharePoint / Power Automate inventory load
+function getStatusClass(status) {
+  if (status === "Pending Pickup") return "pending";
+  if (status === "Sold") return "sold";
+  return "available";
+}
+
+function getImageFromTitle(title) {
+  const t = String(title).toLowerCase();
+  if (t.includes("monitor")) return "images/monitor.jpg";
+  if (t.includes("chair")) return "images/chair.jpg";
+  if (t.includes("jacket")) return "images/jacket.jpg";
+  if (t.includes("laptop")) return "images/laptop.jpg";
+  if (t.includes("table")) return "images/table.jpg";
+  if (t.includes("shirt")) return "images/shirts.jpg";
+  if (t.includes("microwave")) return "images/microwave.jpg";
+  if (t.includes("lamp")) return "images/lamp.jpg";
+  return "images/monitor.jpg";
+}
+
 async function loadItemsFromSharePoint() {
   const container = document.querySelector(".inventory-grid");
   if (!container) return;
@@ -83,8 +101,14 @@ async function loadItemsFromSharePoint() {
     });
 
     const data = await response.json();
+    console.log("FLOW RESPONSE:", data);
 
-    const items = Array.isArray(data) ? data : data.value || [];
+    let items = [];
+    if (Array.isArray(data)) {
+      items = data;
+    } else if (Array.isArray(data.value)) {
+      items = data.value;
+    }
 
     container.innerHTML = "";
 
@@ -94,44 +118,32 @@ async function loadItemsFromSharePoint() {
     }
 
     items.forEach((item, index) => {
-      const title = item.Title || item["Item Name"] || item.ItemName || "Untitled Item";
+      const title = item.Title || "Untitled Item";
       const category = item.Category || "Uncategorized";
       const price = item.Price || "0";
       const status = item.Status || "Available";
       const condition = item.Condition || "Good";
 
-      let image = "images/monitor.jpg";
-      const lowerTitle = title.toLowerCase();
-
-      if (lowerTitle.includes("chair")) image = "images/chair.jpg";
-      else if (lowerTitle.includes("jacket")) image = "images/jacket.jpg";
-      else if (lowerTitle.includes("laptop")) image = "images/laptop.jpg";
-      else if (lowerTitle.includes("table")) image = "images/table.jpg";
-      else if (lowerTitle.includes("shirt")) image = "images/shirts.jpg";
-      else if (lowerTitle.includes("microwave")) image = "images/microwave.jpg";
-      else if (lowerTitle.includes("lamp")) image = "images/lamp.jpg";
-
-      let statusClass = "available";
-      if (status === "Pending Pickup") statusClass = "pending";
-      if (status === "Sold") statusClass = "sold";
+      const fallbackKeys = Object.keys(itemData);
+      const itemKey = fallbackKeys[index] || "chair";
 
       const card = document.createElement("article");
       card.className = "item-card";
       card.dataset.name = title.toLowerCase();
-      card.dataset.category = category.toLowerCase();
+      card.dataset.category = String(category).toLowerCase();
 
       card.innerHTML = `
-        <img src="${image}" class="item-image" alt="${title}">
+        <img src="${getImageFromTitle(title)}" class="item-image" alt="${title}">
         <div class="item-content">
           <div class="item-top-row">
             <h3>${title}</h3>
-            <span class="status-badge ${statusClass}">${status}</span>
+            <span class="status-badge ${getStatusClass(status)}">${status}</span>
           </div>
           <p class="item-category">${category}</p>
           <p class="item-price">$${price}</p>
           <p class="item-category">Condition: ${condition}</p>
           <div class="item-actions">
-            <a class="card-link" href="item.html?item=${Object.keys(itemData)[index] || 'chair'}">View Details</a>
+            <a class="card-link" href="item.html?item=${itemKey}">View Details</a>
           </div>
         </div>
       `;
@@ -146,14 +158,13 @@ async function loadItemsFromSharePoint() {
   }
 }
 
-// Inventory filtering
 function setupFiltering() {
   const searchInput = document.getElementById("searchInput");
   const filterButtons = document.querySelectorAll(".filter-btn");
-  const itemCards = document.querySelectorAll(".item-card");
   let activeCategory = "all";
 
   function filterItems() {
+    const itemCards = document.querySelectorAll(".item-card");
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
     itemCards.forEach((card) => {
@@ -181,7 +192,6 @@ function setupFiltering() {
   });
 }
 
-// Dynamic item detail page
 function loadItemDetails() {
   const params = new URLSearchParams(window.location.search);
   const itemKey = params.get("item");
@@ -213,17 +223,12 @@ function loadItemDetails() {
   if (detailStatusBadge) {
     detailStatusBadge.textContent = item.status;
     detailStatusBadge.className = "status-badge";
-    if (item.status === "Available") {
-      detailStatusBadge.classList.add("available");
-    } else if (item.status === "Pending Pickup") {
-      detailStatusBadge.classList.add("pending");
-    } else {
-      detailStatusBadge.classList.add("sold");
-    }
+    if (item.status === "Available") detailStatusBadge.classList.add("available");
+    else if (item.status === "Pending Pickup") detailStatusBadge.classList.add("pending");
+    else detailStatusBadge.classList.add("sold");
   }
 }
 
-// Status update buttons
 function setupStatusButtons() {
   const statusText = document.getElementById("detailStatusText");
   const statusBadge = document.getElementById("detailStatusBadge");
@@ -238,18 +243,13 @@ function setupStatusButtons() {
       statusBadge.className = "status-badge";
       statusBadge.textContent = newStatus;
 
-      if (newStatus === "Available") {
-        statusBadge.classList.add("available");
-      } else if (newStatus === "Pending Pickup") {
-        statusBadge.classList.add("pending");
-      } else {
-        statusBadge.classList.add("sold");
-      }
+      if (newStatus === "Available") statusBadge.classList.add("available");
+      else if (newStatus === "Pending Pickup") statusBadge.classList.add("pending");
+      else statusBadge.classList.add("sold");
     });
   });
 }
 
-// Chat widget
 function setupChatWidget() {
   const chatToggle = document.getElementById("chatToggle");
   const chatBox = document.getElementById("chatBox");
@@ -300,7 +300,6 @@ function setupChatWidget() {
   });
 }
 
-// Run page features
 document.addEventListener("DOMContentLoaded", () => {
   loadItemsFromSharePoint();
   loadItemDetails();
