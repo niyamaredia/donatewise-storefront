@@ -1,103 +1,37 @@
-const apiUrl = "https://7d40a9c57127e2e0af34e868fdebb9.f5.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/3cd62793afa3492dba9367bcc479774d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c7jvqBTY6xPFAUEobOsD7C2yU_tlOD0XGTWZbgZl0JU";
-
-const itemData = {
-  monitor: {
-    name: 'Dell Monitor 24"',
-    category: 'Electronics',
-    price: '$45',
-    status: 'Available',
-    image: 'images/monitor.jpg',
-    description: '24-inch Dell monitor in good working condition. Suitable for office or workstation use.'
+const msalConfig = {
+  auth: {
+    clientId: "07e940a2-e4a5-4cbd-a59e-99554b722377",
+    authority: "https://login.microsoftonline.com/4bdbaab1-f9e6-46f2-939c-a3df7cf52b8e",
+    redirectUri: "https://niyamaredia.github.io/donatewise-storefront/"
   },
-  chair: {
-    name: 'Office Chair',
-    category: 'Furniture',
-    price: '$20',
-    status: 'Pending Pickup',
-    image: 'images/chair.jpg',
-    description: 'Gently used office chair in good condition. Suitable for desk or reception use.'
-  },
-  jacket: {
-    name: 'Winter Jacket',
-    category: 'Clothing',
-    price: '$15',
-    status: 'Available',
-    image: 'images/jacket.jpg',
-    description: 'Warm winter jacket available in good condition.'
-  },
-  laptop: {
-    name: 'Laptop - HP',
-    category: 'Electronics',
-    price: '$120',
-    status: 'Sold',
-    image: 'images/laptop.jpg',
-    description: 'Used HP laptop previously available in the store.'
-  },
-  table: {
-    name: 'Coffee Table',
-    category: 'Furniture',
-    price: '$30',
-    status: 'Available',
-    image: 'images/table.jpg',
-    description: 'Simple wooden coffee table suitable for home or office use.'
-  },
-  shirts: {
-    name: 'Men’s Dress Shirts',
-    category: 'Clothing',
-    price: '$10',
-    status: 'Available',
-    image: 'images/shirts.jpg',
-    description: 'Collection of men’s dress shirts in wearable condition.'
-  },
-  microwave: {
-    name: 'Microwave Oven',
-    category: 'Household',
-    price: '$35',
-    status: 'Pending Pickup',
-    image: 'images/microwave.jpg',
-    description: 'Microwave oven in working condition, available for pickup.'
-  },
-  lamp: {
-    name: 'Desk Lamp',
-    category: 'Office Supplies',
-    price: '$8',
-    status: 'Sold',
-    image: 'images/lamp.jpg',
-    description: 'Desk lamp previously listed and sold from inventory.'
+  cache: {
+    cacheLocation: "localStorage",
+    storeAuthStateInCookie: false
   }
 };
 
+const loginRequest = {
+  scopes: ["User.Read", "Sites.Read.All"]
+};
+
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+const siteHost = "donatewise.sharepoint.com";
+const sitePath = "/sites/DonateWiseTeam";
+const listName = "StorefrontListings";
+
 let storefrontItems = [];
 
-function getFieldValue(field, fallback = "") {
-  if (field === null || field === undefined) return fallback;
-  if (typeof field === "string" || typeof field === "number") return field;
-
-  if (Array.isArray(field)) {
-    if (!field.length) return fallback;
-    if (typeof field[0] === "string") return field.join(", ");
-    if (field[0]?.Value) return field.map(item => item.Value).join(", ");
-    return fallback;
-  }
-
-  if (field?.Value) return field.Value;
-  return fallback;
-}
-
 function getStatusClass(status) {
-  const normalized = String(status).toLowerCase();
+  const normalized = String(status || "").toLowerCase();
   if (normalized.includes("sold")) return "sold";
   if (normalized.includes("pending")) return "pending";
   return "available";
 }
 
 function getImageFromTitle(title, category) {
-  const safeTitle = String(title || "Item").trim();
-  const safeCategory = String(category || "").trim();
-
-  const label = encodeURIComponent(safeTitle);
-  const sub = encodeURIComponent(safeCategory);
-
+  const safeTitle = encodeURIComponent(String(title || "Item"));
+  const safeCategory = encodeURIComponent(String(category || ""));
   return `data:image/svg+xml;utf8,
     <svg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'>
       <defs>
@@ -109,67 +43,20 @@ function getImageFromTitle(title, category) {
       <rect width='600' height='400' fill='url(%23g)'/>
       <circle cx='300' cy='150' r='54' fill='%23ffffff' opacity='0.9'/>
       <text x='300' y='165' text-anchor='middle' font-size='42' font-family='Arial, sans-serif' fill='%23334155'>📦</text>
-      <text x='300' y='255' text-anchor='middle' font-size='30' font-weight='700' font-family='Arial, sans-serif' fill='%23111827'>${label}</text>
-      <text x='300' y='292' text-anchor='middle' font-size='18' font-family='Arial, sans-serif' fill='%23667085'>${sub}</text>
+      <text x='300' y='255' text-anchor='middle' font-size='30' font-weight='700' font-family='Arial, sans-serif' fill='%23111827'>${safeTitle}</text>
+      <text x='300' y='292' text-anchor='middle' font-size='18' font-family='Arial, sans-serif' fill='%23667085'>${safeCategory}</text>
     </svg>`;
 }
 
 function formatCurrency(value) {
-  if (value === null || value === undefined || value === "") return "$0";
   const number = Number(value);
-  if (Number.isNaN(number)) return `$${value}`;
-  return `$${number}`;
+  if (Number.isNaN(number)) return `$${value ?? 0}`;
+  return `$${number.toFixed(2)}`;
 }
 
 function formatSyncTime() {
   const now = new Date();
   return `Last synced ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
-}
-
-function mapSharePointItems(rawItems) {
-  return rawItems.map((item, index) => {
-    const title = getFieldValue(item.Title, "Untitled Item");
-    const category = getFieldValue(item.Category, "Uncategorized");
-    const price = getFieldValue(item.Price, "0");
-    const status = getFieldValue(item.Status, "Available");
-    const condition = getFieldValue(item.Condition, "Good");
-
-    const sharePointImage =
-      getFieldValue(item.ImageURL, "") ||
-      getFieldValue(item.ImageUrl, "") ||
-      getFieldValue(item.Image, "") ||
-      "";
-
-    const fallbackKeys = Object.keys(itemData);
-    const itemKey = fallbackKeys[index] || title.toLowerCase().replace(/\s+/g, "-");
-
-    return {
-      key: itemKey,
-      title,
-      category,
-      price,
-      status,
-      condition,
-      image: sharePointImage || getImageFromTitle(title, category)
-    };
-  });
-}
-
-async function fetchLiveInventory() {
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({})
-  });
-
-  const data = await response.json();
-  console.log("FLOW RESPONSE:", data);
-
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.value)) return data.value;
-  return [];
 }
 
 function updateSyncStatus(text) {
@@ -178,6 +65,123 @@ function updateSyncStatus(text) {
 
   const dashboardSyncText = document.getElementById("dashboardSyncText");
   if (dashboardSyncText) dashboardSyncText.textContent = text;
+}
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+async function ensureAuthenticated() {
+  await msalInstance.initialize();
+
+  const redirectResponse = await msalInstance.handleRedirectPromise();
+  if (redirectResponse && redirectResponse.account) {
+    msalInstance.setActiveAccount(redirectResponse.account);
+  }
+
+  let account = msalInstance.getActiveAccount();
+  if (!account) {
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length > 0) {
+      account = accounts[0];
+      msalInstance.setActiveAccount(account);
+    }
+  }
+
+  return account;
+}
+
+async function acquireAccessToken() {
+  let account = await ensureAuthenticated();
+
+  if (!account) {
+    window.location.href = "index.html";
+    throw new Error("No signed-in account found.");
+  }
+
+  try {
+    const tokenResponse = await msalInstance.acquireTokenSilent({
+      ...loginRequest,
+      account
+    });
+    return tokenResponse.accessToken;
+  } catch (error) {
+    const tokenResponse = await msalInstance.acquireTokenPopup(loginRequest);
+    return tokenResponse.accessToken;
+  }
+}
+
+async function loadStorefrontItemsFromGraph() {
+  const accessToken = await acquireAccessToken();
+
+  const siteResponse = await fetch(
+    `https://graph.microsoft.com/v1.0/sites/${siteHost}:${sitePath}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
+
+  if (!siteResponse.ok) {
+    throw new Error("Could not find SharePoint site.");
+  }
+
+  const siteData = await siteResponse.json();
+  const siteId = siteData.id;
+
+  const listResponse = await fetch(
+    `https://graph.microsoft.com/v1.0/sites/${siteId}/lists?$filter=displayName eq '${listName}'`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
+
+  if (!listResponse.ok) {
+    throw new Error("Could not find SharePoint list.");
+  }
+
+  const listData = await listResponse.json();
+  if (!listData.value || listData.value.length === 0) {
+    throw new Error("StorefrontListings list not found.");
+  }
+
+  const listId = listData.value[0].id;
+
+  const itemsResponse = await fetch(
+    `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?expand=fields($select=ItemName,Category,Price,Status,Condition)`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
+
+  if (!itemsResponse.ok) {
+    throw new Error("Could not load list items.");
+  }
+
+  const itemsData = await itemsResponse.json();
+
+  return (itemsData.value || []).map((item, index) => {
+    const fields = item.fields || {};
+    return {
+      key: `${String(fields.ItemName || "item").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index}`,
+      title: fields.ItemName || "Untitled Item",
+      category: fields.Category || "Uncategorized",
+      price: fields.Price || 0,
+      status: fields.Status || "Available",
+      condition: fields.Condition || "Good",
+      image: getImageFromTitle(fields.ItemName || "Item", fields.Category || "")
+    };
+  });
 }
 
 function renderInventory(items) {
@@ -202,17 +206,17 @@ function renderInventory(items) {
     card.dataset.category = String(item.category).toLowerCase();
 
     card.innerHTML = `
-      <img src="${item.image}" class="item-image" alt="${item.title}">
+      <img src="${item.image}" class="item-image" alt="${escapeHtml(item.title)}">
       <div class="item-content">
         <div class="item-top-row">
-          <h3>${item.title}</h3>
-          <span class="status-badge ${getStatusClass(item.status)}">${item.status}</span>
+          <h3>${escapeHtml(item.title)}</h3>
+          <span class="status-badge ${getStatusClass(item.status)}">${escapeHtml(item.status)}</span>
         </div>
-        <p class="item-category">${item.category}</p>
+        <p class="item-category">${escapeHtml(item.category)}</p>
         <p class="item-price">${formatCurrency(item.price)}</p>
-        <p class="item-category">Condition: ${item.condition}</p>
+        <p class="item-category">Condition: ${escapeHtml(item.condition)}</p>
         <div class="item-actions">
-          <a class="card-link" href="item.html?item=${encodeURIComponent(item.key)}">View Details</a>
+          <span class="card-link">Live SharePoint Item</span>
         </div>
       </div>
     `;
@@ -266,10 +270,8 @@ async function loadItemsFromSharePoint() {
       </div>
     `;
 
-    updateSyncStatus("Syncing with SharePoint...");
-
-    const rawItems = await fetchLiveInventory();
-    storefrontItems = mapSharePointItems(rawItems);
+    updateSyncStatus("Authenticating...");
+    storefrontItems = await loadStorefrontItemsFromGraph();
 
     renderInventory(storefrontItems);
     setupFiltering();
@@ -295,9 +297,7 @@ async function loadDashboardFromSharePoint() {
   if (!totalEl || !availableEl || !pendingEl || !soldEl || !tableBody) return;
 
   try {
-    updateSyncStatus("Syncing dashboard...");
-    const rawItems = await fetchLiveInventory();
-    const items = mapSharePointItems(rawItems);
+    const items = storefrontItems.length ? storefrontItems : await loadStorefrontItemsFromGraph();
 
     const total = items.length;
     const available = items.filter(item => item.status.toLowerCase().includes("available")).length;
@@ -314,10 +314,10 @@ async function loadDashboardFromSharePoint() {
     items.slice(0, 10).forEach((item) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${item.title}</td>
-        <td>${item.category}</td>
-        <td><span class="status-badge ${getStatusClass(item.status)}">${item.status}</span></td>
-        <td>${item.condition}</td>
+        <td>${escapeHtml(item.title)}</td>
+        <td>${escapeHtml(item.category)}</td>
+        <td><span class="status-badge ${getStatusClass(item.status)}">${escapeHtml(item.status)}</span></td>
+        <td>${escapeHtml(item.condition)}</td>
       `;
       tableBody.appendChild(row);
     });
@@ -332,57 +332,6 @@ async function loadDashboardFromSharePoint() {
     `;
     updateSyncStatus("Sync failed");
   }
-}
-
-function loadItemDetails() {
-  const params = new URLSearchParams(window.location.search);
-  const itemKey = params.get("item");
-  if (!itemKey || !itemData[itemKey]) return;
-
-  const item = itemData[itemKey];
-
-  const detailName = document.getElementById("detailName");
-  const detailCategory = document.getElementById("detailCategory");
-  const detailPrice = document.getElementById("detailPrice");
-  const detailStatusText = document.getElementById("detailStatusText");
-  const detailStatusBadge = document.getElementById("detailStatusBadge");
-  const detailImage = document.getElementById("detailImage");
-  const detailDescription = document.getElementById("detailDescription");
-  const detailCondition = document.getElementById("detailCondition");
-
-  if (detailName) detailName.textContent = item.name;
-  if (detailCategory) detailCategory.textContent = item.category;
-  if (detailPrice) detailPrice.textContent = item.price;
-  if (detailStatusText) detailStatusText.textContent = item.status;
-  if (detailDescription) detailDescription.textContent = item.description;
-  if (detailCondition) detailCondition.textContent = "Good";
-
-  if (detailImage) {
-    detailImage.src = item.image;
-    detailImage.alt = item.name;
-  }
-
-  if (detailStatusBadge) {
-    detailStatusBadge.textContent = item.status;
-    detailStatusBadge.className = `status-badge ${getStatusClass(item.status)}`;
-  }
-}
-
-function setupStatusButtons() {
-  const statusText = document.getElementById("detailStatusText");
-  const statusBadge = document.getElementById("detailStatusBadge");
-  const statusButtons = document.querySelectorAll(".status-action");
-
-  statusButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const newStatus = button.dataset.status;
-      if (!statusText || !statusBadge) return;
-
-      statusText.textContent = newStatus;
-      statusBadge.className = `status-badge ${getStatusClass(newStatus)}`;
-      statusBadge.textContent = newStatus;
-    });
-  });
 }
 
 function setupChatWidget() {
@@ -408,16 +357,13 @@ function setupChatWidget() {
     button.addEventListener("click", () => {
       if (!chatResponses) return;
 
-      const questionText = button.textContent.trim();
-      const answerText = button.dataset.answer;
-
       const userBubble = document.createElement("div");
       userBubble.className = "user-response";
-      userBubble.textContent = questionText;
+      userBubble.textContent = button.textContent.trim();
 
       const assistantBubble = document.createElement("div");
       assistantBubble.className = "assistant-response";
-      assistantBubble.textContent = answerText;
+      assistantBubble.textContent = button.dataset.answer;
 
       chatResponses.appendChild(userBubble);
       chatResponses.appendChild(assistantBubble);
@@ -425,10 +371,24 @@ function setupChatWidget() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadItemsFromSharePoint();
-  loadDashboardFromSharePoint();
-  loadItemDetails();
-  setupStatusButtons();
+function setupLogout() {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+    await msalInstance.logoutPopup({
+      account,
+      postLogoutRedirectUri: "https://niyamaredia.github.io/donatewise-storefront/index.html"
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
   setupChatWidget();
+  setupLogout();
+  await loadItemsFromSharePoint();
+  await loadDashboardFromSharePoint();
 });
