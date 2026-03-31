@@ -19,7 +19,7 @@
       </div>
 
       <nav class="top-nav">
-        <a class="nav-btn ghost" href="index.html">Log Out</a>
+        <a class="nav-btn ghost" href="#" id="logoutBtn">Log Out</a>
         <a class="nav-btn primary" href="dashboard.html">Dashboard</a>
       </nav>
     </div>
@@ -45,7 +45,7 @@
         <article class="hero-stat-card accent-blue">
           <p>System Status</p>
           <h3>Connected</h3>
-          <span class="stat-note">SharePoint + Power Automate live</span>
+          <span class="stat-note">SharePoint + Microsoft Graph live</span>
         </article>
 
         <article class="hero-stat-card accent-green">
@@ -71,7 +71,7 @@
 
         <div class="sync-badge" id="syncBadge">
           <span class="sync-dot"></span>
-          <span id="syncText">Waiting for sync...</span>
+          <span id="syncText">Connecting...</span>
         </div>
       </div>
 
@@ -87,6 +87,7 @@
         <button class="filter-btn" data-category="household">Household</button>
         <button class="filter-btn" data-category="office supplies">Office Supplies</button>
         <button class="filter-btn" data-category="accessories">Accessories</button>
+        <button class="filter-btn" data-category="bedding">Bedding</button>
       </div>
     </section>
 
@@ -116,7 +117,7 @@
         <button class="quick-question" data-answer="Use the search bar or category filters to quickly narrow down the listings.">
           How do I find items faster?
         </button>
-        <button class="quick-question" data-answer="Available means ready for access, Pending Pickup means reserved or in progress, and Sold means no longer available.">
+        <button class="quick-question" data-answer="Available means ready for access, Pending means reserved or in progress, and Sold means no longer available.">
           What do the status labels mean?
         </button>
       </div>
@@ -125,6 +126,7 @@
     </div>
   </section>
 
+  <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
